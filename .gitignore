@@ -2,3 +2,4 @@ config.xml
 files/
 ForecastGenerator
 ForecastGenerator.exe
+Private.pem

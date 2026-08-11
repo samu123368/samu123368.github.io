@@ -27,11 +27,17 @@ jobs:
       - uses: actions/setup-go@v6
         with:
           go-version: "1.26.x"
+      - name: Install forecast signing key
+        env:
+          FORECAST_PRIVATE_KEY: ${{ secrets.FORECAST_PRIVATE_KEY }}
+        run: printf '%s' "$FORECAST_PRIVATE_KEY" > Private.pem
       - name: Generate Switzerland forecast data
         run: |
           cp config-example.xml config.xml
           go build -buildvcs=false -o ForecastGenerator .
           ./ForecastGenerator
+          find files -type f -name forecast.bin -execdir cp forecast.bin f.bin \;
+          find files -type f -name short.bin -execdir cp short.bin s.bin \;
       - name: Validate generated data
         run: go test ./...
       - uses: actions/configure-pages@v5
