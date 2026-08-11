@@ -57,6 +57,7 @@ var (
 func main() {
 	// Get all important data we need
 	weatherList = ParseWeatherXML()
+	weatherList.International.Cities = BuildUniversalCities(weatherList, "Switzerland")
 	for _, national := range weatherList.National {
 		if national.Name.English == "Switzerland" {
 			weatherList.National = []NationalList{national}
@@ -88,48 +89,47 @@ func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	semaphore := make(chan struct{}, 4)
 
-	// Next retrieve international weather
-	wg.Add(len(weatherList.International.Cities))
+	// Retrieve the entire world database in compact batches. A failed batch
+	// aborts generation so the previously deployed complete feed stays live.
+	coordinates := make([]accuweather.Coordinate, 0, len(weatherList.International.Cities)+100)
+	seenCoordinates := make(map[string]struct{}, len(weatherList.International.Cities)+100)
+	addCoordinate := func(longitude float64, latitude float64) {
+		key := fmt.Sprintf("%f,%f", longitude, latitude)
+		if _, ok := seenCoordinates[key]; ok {
+			return
+		}
+		seenCoordinates[key] = struct{}{}
+		coordinates = append(coordinates, accuweather.Coordinate{Longitude: longitude, Latitude: latitude})
+	}
 	for _, city := range weatherList.International.Cities {
-		go func(_city InternationalCity) {
-			defer wg.Done()
-			semaphore <- struct{}{}
-			weather := accuweather.GetWeather(_city.Longitude, _city.Latitude, currentTime, _config.AccuweatherKey)
-			mapMutex.Lock()
-			weatherMap[fmt.Sprintf("%f,%f", _city.Longitude, _city.Latitude)] = weather
-			mapMutex.Unlock()
-			<-semaphore
-		}(city)
+		addCoordinate(city.Longitude, city.Latitude)
 	}
-	wg.Wait()
-
-	// We must get the number of national cities not yet generated
-	numberOfCities := 0
-	for _, cities := range weatherList.National {
-		for _, city := range cities.Cities {
-			if weatherMap[fmt.Sprintf("%f,%f", city.Longitude, city.Latitude)] == nil {
-				numberOfCities++
-			}
+	for _, national := range weatherList.National {
+		for _, city := range national.Cities {
+			addCoordinate(city.Longitude, city.Latitude)
 		}
 	}
 
-	wg.Add(numberOfCities)
-	for _, cities := range weatherList.National {
-		for _, city := range cities.Cities {
-			if weatherMap[fmt.Sprintf("%f,%f", city.Longitude, city.Latitude)] == nil {
-				go func(_city City) {
-					defer wg.Done()
-					semaphore <- struct{}{}
-					weather := accuweather.GetWeather(_city.Longitude, _city.Latitude, currentTime, _config.AccuweatherKey)
-					mapMutex.Lock()
-					weatherMap[fmt.Sprintf("%f,%f", _city.Longitude, _city.Latitude)] = weather
-					mapMutex.Unlock()
-					<-semaphore
-				}(city)
-			}
+	const batchSize = 40
+	numberOfBatches := (len(coordinates) + batchSize - 1) / batchSize
+	for start, batchNumber := 0, 1; start < len(coordinates); start, batchNumber = start+batchSize, batchNumber+1 {
+		end := start + batchSize
+		if end > len(coordinates) {
+			end = len(coordinates)
+		}
+		if batchNumber > 1 {
+			// Forty coordinates count against Open-Meteo's 600-call/minute
+			// free-tier limit. This interval stays just under that ceiling.
+			time.Sleep(4500 * time.Millisecond)
+		}
+		fmt.Printf("Weather batch %d/%d\n", batchNumber, numberOfBatches)
+		batch := coordinates[start:end]
+		results, err := accuweather.GetWeatherBatch(batch, currentTime, _config.AccuweatherKey)
+		checkError(err)
+		for i, coordinate := range batch {
+			weatherMap[fmt.Sprintf("%f,%f", coordinate.Longitude, coordinate.Latitude)] = results[i]
 		}
 	}
-	wg.Wait()
 
 	wg.Add(len(weatherList.National))
 	for _, national := range weatherList.National {

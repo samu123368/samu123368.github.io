@@ -10,7 +10,7 @@ import (
 	"github.com/wii-tools/lzx/lz10"
 )
 
-func TestBadenInEnglishForecast(t *testing.T) {
+func TestCustomLocationsInEnglishForecast(t *testing.T) {
 	data, err := os.ReadFile("files/1/108/forecast.bin")
 	if err != nil {
 		t.Fatal(err)
@@ -29,16 +29,76 @@ func TestBadenInEnglishForecast(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	found := 0
-	for i := uint32(0); i < header.NumberOfLocations; i++ {
-		offset := header.LocationsTableOffset + i*24
-		cityTextOffset := binary.BigEndian.Uint32(decompressed[offset+4:])
-		if decodeUTF16BE(decompressed, cityTextOffset) == "Baden" {
-			found++
+	list := ParseWeatherXML()
+	list.International.Cities = BuildUniversalCities(list, "Switzerland")
+	PopulateCountryCodes()
+	var switzerland *NationalList
+	for i := range list.National {
+		if list.National[i].Name.English == "Switzerland" {
+			switzerland = &list.National[i]
+			break
 		}
 	}
-	if found != 1 {
-		t.Fatalf("expected exactly one Baden location, found %d", found)
+	if switzerland == nil {
+		t.Fatal("Switzerland source list is missing")
+	}
+	expectedForecast := Forecast{
+		currentCountryList: switzerland,
+		currentCountryCode: countryCodes["Switzerland"],
+	}
+	expectedForecast.PopulateLocations(list.International.Cities)
+	expectedLocations := 0
+	for country := expectedForecast.rawLocations.Oldest(); country != nil; country = country.Next() {
+		for province := country.Value.Oldest(); province != nil; province = province.Next() {
+			expectedLocations += province.Value.Len()
+		}
+	}
+	if int(header.NumberOfLocations) != expectedLocations {
+		t.Fatalf("generated %d locations, expected the complete set of %d", header.NumberOfLocations, expectedLocations)
+	}
+	if header.NumberOfLongForecastTables+header.NumberOfShortForecastTables != header.NumberOfLocations {
+		t.Fatalf("not every location has a forecast table: %d long + %d short != %d locations", header.NumberOfLongForecastTables, header.NumberOfShortForecastTables, header.NumberOfLocations)
+	}
+
+	expected := map[string]int{
+		"Baden":                 0,
+		"San Giovanni in Fiore": 0,
+		"Maglie":                0,
+		"Otranto":               0,
+		"Santa Maria di Leuca":  0,
+		"Gallipoli":             0,
+		"Minervino di Lecce":    0,
+	}
+	countryCodesFound := make(map[uint8]struct{})
+	for i := uint32(0); i < header.NumberOfLocations; i++ {
+		offset := header.LocationsTableOffset + i*24
+		countryCodesFound[decompressed[offset]] = struct{}{}
+		cityTextOffset := binary.BigEndian.Uint32(decompressed[offset+4:])
+		name := decodeUTF16BE(decompressed, cityTextOffset)
+		if _, ok := expected[name]; ok {
+			expected[name]++
+		}
+	}
+	if len(countryCodesFound) < 180 {
+		t.Errorf("expected worldwide country coverage, found only %d country codes", len(countryCodesFound))
+	}
+
+	for i := uint32(0); i < header.NumberOfLongForecastTables; i++ {
+		offset := header.LongForecastTableOffset + i*uint32(binary.Size(LongForecastTable{}))
+		if icon := binary.BigEndian.Uint16(decompressed[offset+16:]); icon == 0xFFFF {
+			t.Errorf("long forecast %d has no weather icon", i)
+		}
+	}
+	for i := uint32(0); i < header.NumberOfShortForecastTables; i++ {
+		offset := header.ShortForecastTableOffset + i*uint32(binary.Size(ShortForecastTable{}))
+		if icon := binary.BigEndian.Uint16(decompressed[offset+16:]); icon == 0xFFFF {
+			t.Errorf("short forecast %d has no weather icon", i)
+		}
+	}
+	for name, found := range expected {
+		if found != 1 {
+			t.Errorf("expected exactly one %s location, found %d", name, found)
+		}
 	}
 }
 

@@ -29325,6 +29325,60 @@
       <name jpn="カリアリ" eng="Cagliari" de="Cagliari" fr="Cagliari" es="Cagliari" it="Cagliari" nl="Cagliari" />
     </city>
     <city>
+      <province jpn="カラブリア州" eng="Calabria" de="Kalabrien" fr="Calabre" es="Calabria" it="Calabria" nl="Calabrië" />
+      <longitude>16.69699</longitude>
+      <latitude>39.25446</latitude>
+      <zoom1>1</zoom1>
+      <zoom2>3</zoom2>
+      <country jpn="イタリア" eng="Italy" de="Italien" fr="Italie" es="Italia" it="Italia" nl="Italië" />
+      <name jpn="サン・ジョヴァンニ・イン・フィオーレ" eng="San Giovanni in Fiore" de="San Giovanni in Fiore" fr="San Giovanni in Fiore" es="San Giovanni in Fiore" it="San Giovanni in Fiore" nl="San Giovanni in Fiore" />
+    </city>
+    <city>
+      <province jpn="プッリャ州" eng="Apulia" de="Apulien" fr="Pouilles" es="Apulia" it="Puglia" nl="Apulië" />
+      <longitude>18.29797</longitude>
+      <latitude>40.12069</latitude>
+      <zoom1>1</zoom1>
+      <zoom2>3</zoom2>
+      <country jpn="イタリア" eng="Italy" de="Italien" fr="Italie" es="Italia" it="Italia" nl="Italië" />
+      <name jpn="マーリエ" eng="Maglie" de="Maglie" fr="Maglie" es="Maglie" it="Maglie" nl="Maglie" />
+    </city>
+    <city>
+      <province jpn="プッリャ州" eng="Apulia" de="Apulien" fr="Pouilles" es="Apulia" it="Puglia" nl="Apulië" />
+      <longitude>18.48682</longitude>
+      <latitude>40.14789</latitude>
+      <zoom1>1</zoom1>
+      <zoom2>3</zoom2>
+      <country jpn="イタリア" eng="Italy" de="Italien" fr="Italie" es="Italia" it="Italia" nl="Italië" />
+      <name jpn="オトラント" eng="Otranto" de="Otranto" fr="Otranto" es="Otranto" it="Otranto" nl="Otranto" />
+    </city>
+    <city>
+      <province jpn="プッリャ州" eng="Apulia" de="Apulien" fr="Pouilles" es="Apulia" it="Puglia" nl="Apulië" />
+      <longitude>18.35674</longitude>
+      <latitude>39.80031</latitude>
+      <zoom1>1</zoom1>
+      <zoom2>3</zoom2>
+      <country jpn="イタリア" eng="Italy" de="Italien" fr="Italie" es="Italia" it="Italia" nl="Italië" />
+      <name jpn="サンタ・マリア・ディ・レウカ" eng="Santa Maria di Leuca" de="Santa Maria di Leuca" fr="Santa Maria di Leuca" es="Santa Maria di Leuca" it="Santa Maria di Leuca" nl="Santa Maria di Leuca" />
+    </city>
+    <city>
+      <province jpn="プッリャ州" eng="Apulia" de="Apulien" fr="Pouilles" es="Apulia" it="Puglia" nl="Apulië" />
+      <longitude>17.99088</longitude>
+      <latitude>40.05594</latitude>
+      <zoom1>1</zoom1>
+      <zoom2>3</zoom2>
+      <country jpn="イタリア" eng="Italy" de="Italien" fr="Italie" es="Italia" it="Italia" nl="Italië" />
+      <name jpn="ガッリーポリ" eng="Gallipoli" de="Gallipoli" fr="Gallipoli" es="Gallipoli" it="Gallipoli" nl="Gallipoli" />
+    </city>
+    <city>
+      <province jpn="プッリャ州" eng="Apulia" de="Apulien" fr="Pouilles" es="Apulia" it="Puglia" nl="Apulië" />
+      <longitude>18.42139</longitude>
+      <latitude>40.09025</latitude>
+      <zoom1>1</zoom1>
+      <zoom2>3</zoom2>
+      <country jpn="イタリア" eng="Italy" de="Italien" fr="Italie" es="Italia" it="Italia" nl="Italië" />
+      <name jpn="ミネルヴィーノ・ディ・レッチェ" eng="Minervino di Lecce" de="Minervino di Lecce" fr="Minervino di Lecce" es="Minervino di Lecce" it="Minervino di Lecce" nl="Minervino di Lecce" />
+    </city>
+    <city>
       <province jpn="リガ" eng="Riga" de="Riga" fr="Riga" es="Riga" it="Riga" nl="Riga" />
       <longitude>24.08203125</longitude>
       <latitude>56.9476318359375</latitude>
