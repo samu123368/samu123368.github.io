@@ -30,7 +30,7 @@ func TestCustomLocationsInEnglishForecast(t *testing.T) {
 	}
 
 	list := ParseWeatherXML()
-	list.International.Cities = BuildUniversalCities(list, "Switzerland")
+	list.International.Cities = BuildCompatibleCities(list, "Switzerland")
 	PopulateCountryCodes()
 	var switzerland *NationalList
 	for i := range list.National {
@@ -58,7 +58,10 @@ func TestCustomLocationsInEnglishForecast(t *testing.T) {
 		}
 	}
 	if int(header.NumberOfLocations) != expectedLocations {
-		t.Fatalf("generated %d locations, expected the complete set of %d", header.NumberOfLocations, expectedLocations)
+		t.Fatalf("generated %d locations, expected the compatible set of %d", header.NumberOfLocations, expectedLocations)
+	}
+	if header.NumberOfLocations > 1000 {
+		t.Fatalf("generated %d locations, exceeding the retail channel compatibility ceiling", header.NumberOfLocations)
 	}
 	if header.NumberOfLongForecastTables+header.NumberOfShortForecastTables != header.NumberOfLocations {
 		t.Fatalf("not every location has a forecast table: %d long + %d short != %d locations", header.NumberOfLongForecastTables, header.NumberOfShortForecastTables, header.NumberOfLocations)
@@ -73,6 +76,14 @@ func TestCustomLocationsInEnglishForecast(t *testing.T) {
 		"Gallipoli":             0,
 		"Minervino di Lecce":    0,
 	}
+	priority := map[string]struct{}{
+		"San Giovanni in Fiore": {},
+		"Maglie":                {},
+		"Otranto":               {},
+		"Santa Maria di Leuca":  {},
+		"Gallipoli":             {},
+		"Minervino di Lecce":    {},
+	}
 	countryCodesFound := make(map[uint8]struct{})
 	for i := uint32(0); i < header.NumberOfLocations; i++ {
 		offset := header.LocationsTableOffset + i*24
@@ -81,6 +92,9 @@ func TestCustomLocationsInEnglishForecast(t *testing.T) {
 		name := decodeUTF16BE(decompressed, cityTextOffset)
 		if _, ok := expected[name]; ok {
 			expected[name]++
+		}
+		if _, ok := priority[name]; ok && decompressed[offset+20] != 9 {
+			t.Errorf("expected %s to have maximum map priority, found %d", name, decompressed[offset+20])
 		}
 	}
 	if len(countryCodesFound) != len(expectedCountryCodes) {
@@ -104,6 +118,7 @@ func TestCustomLocationsInEnglishForecast(t *testing.T) {
 			t.Errorf("expected exactly one %s location, found %d", name, found)
 		}
 	}
+	t.Logf("validated %d compatible locations and all requested additions", header.NumberOfLocations)
 }
 
 func decodeUTF16BE(data []byte, offset uint32) string {

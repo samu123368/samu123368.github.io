@@ -57,7 +57,7 @@ var (
 func main() {
 	// Get all important data we need
 	weatherList = ParseWeatherXML()
-	weatherList.International.Cities = BuildUniversalCities(weatherList, "Switzerland")
+	weatherList.International.Cities = BuildCompatibleCities(weatherList, "Switzerland")
 	for _, national := range weatherList.National {
 		if national.Name.English == "Switzerland" {
 			weatherList.National = []NationalList{national}

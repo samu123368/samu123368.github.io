@@ -1,10 +1,10 @@
 # Baden Forecast Channel data
 
-This repository generates a universal Wii Forecast Channel globe containing every national and international location in the source database, including Baden, San Giovanni in Fiore, Maglie, Otranto, Santa Maria di Leuca, Gallipoli, and Minervino di Lecce. GitHub Pages publishes signed forecast files for PAL language codes 1–6.
+This repository generates a retail-compatible Wii Forecast Channel globe containing Baden and Nintendo's international location set, with San Giovanni in Fiore, Maglie, Otranto, Santa Maria di Leuca, Gallipoli, and Minervino di Lecce added at high display priority. GitHub Pages publishes signed forecast files for PAL language codes 1–6.
 
 Weather data comes from [Open-Meteo](https://open-meteo.com/). Baden's coordinates come from [GeoNames](https://www.geonames.org/2661646/baden.html).
 
-The generator is based on WiiLink's MPL-2.0-licensed [ForecastChannel](https://github.com/WiiLink24/ForecastChannel) project. It merges every country's national list into one universal globe, uses Open-Meteo instead of an AccuWeather key, and gives each generated forecast a thirteen-hour validity window. GitHub Actions refreshes and deploys the data every twelve hours.
+The generator is based on WiiLink's MPL-2.0-licensed [ForecastChannel](https://github.com/WiiLink24/ForecastChannel) project. It uses Open-Meteo instead of an AccuWeather key and gives each generated forecast a thirteen-hour validity window. GitHub Actions refreshes and deploys the data every twelve hours. An earlier 4,038-location experiment was removed because the retail channel downloaded the data but rejected it at runtime.
 
 The matching WAD fixes the feed country code to `108`, so the complete custom location set and its weather icons load regardless of the country selected in Wii settings. It downloads the compact aliases below over plain HTTP, which the Wii's legacy networking supports:
 
