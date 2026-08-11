@@ -54,6 +54,7 @@ func TestDuplicates(t *testing.T) {
 			}
 
 			if count != 1 {
+				t.Errorf("country %s: location code %d resolves to %d locations", c, locationCode, count)
 				fmt.Println(fmt.Sprintf("Error in Country %s", c))
 				fmt.Println(fmt.Sprintf("Duplicate Detected. Count: %d, Location Code: %d", count, locationCode))
 

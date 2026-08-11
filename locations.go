@@ -52,7 +52,7 @@ func (f *Forecast) PopulateLocations(cities []InternationalCity) {
 		_city := city
 		province.Set(city.English, Location{
 			CountryCode:       f.currentCountryCode,
-			RegionCode:        uint8(country.Len()) + 1,
+			RegionCode:        getStableRegionCode(country, city.Province.English),
 			LocationCode:      uint16(province.Len()) + 1,
 			Latitude:          CoordinateEncode(city.Latitude),
 			Longitude:         CoordinateEncode(city.Longitude),
@@ -85,7 +85,7 @@ func (f *Forecast) PopulateLocations(cities []InternationalCity) {
 		}
 
 		_city := city
-		if _, ok := countryCodes[city.Country.English]; !ok && city.Province.English == "" {
+		if _, ok := countryCodes[city.Country.English]; !ok {
 			province.Set(city.Name.English, Location{
 				CountryCode:       0xFE,
 				RegionCode:        0xFE,
@@ -103,7 +103,7 @@ func (f *Forecast) PopulateLocations(cities []InternationalCity) {
 
 		province.Set(city.Name.English, Location{
 			CountryCode:       countryCodes[city.Country.English],
-			RegionCode:        uint8(country.Len()) + 1,
+			RegionCode:        getStableRegionCode(country, city.Province.English),
 			LocationCode:      uint16(province.Len()) + 1,
 			Latitude:          CoordinateEncode(city.Latitude),
 			Longitude:         CoordinateEncode(city.Longitude),
@@ -115,6 +115,21 @@ func (f *Forecast) PopulateLocations(cities []InternationalCity) {
 	}
 
 	f.rawLocations = locations
+}
+
+// Region codes in the original generator depended on how many provinces had
+// been seen at the moment each city was inserted. That works for country files
+// grouped perfectly by province, but collides on a universal interleaved list.
+// Preserve the original 2-based numbering while making it stable per province.
+func getStableRegionCode(country *orderedmap.OrderedMap[string, *orderedmap.OrderedMap[string, Location]], provinceName string) uint8 {
+	code := uint8(2)
+	for province := country.Oldest(); province != nil; province = province.Next() {
+		if province.Key == provinceName {
+			return code
+		}
+		code++
+	}
+	return 0xFE
 }
 
 func (f *Forecast) MakeLocationTable() {

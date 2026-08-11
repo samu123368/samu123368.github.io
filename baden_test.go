@@ -48,9 +48,13 @@ func TestCustomLocationsInEnglishForecast(t *testing.T) {
 	}
 	expectedForecast.PopulateLocations(list.International.Cities)
 	expectedLocations := 0
+	expectedCountryCodes := make(map[uint8]struct{})
 	for country := expectedForecast.rawLocations.Oldest(); country != nil; country = country.Next() {
 		for province := country.Value.Oldest(); province != nil; province = province.Next() {
 			expectedLocations += province.Value.Len()
+			for city := province.Value.Oldest(); city != nil; city = city.Next() {
+				expectedCountryCodes[city.Value.CountryCode] = struct{}{}
+			}
 		}
 	}
 	if int(header.NumberOfLocations) != expectedLocations {
@@ -79,8 +83,8 @@ func TestCustomLocationsInEnglishForecast(t *testing.T) {
 			expected[name]++
 		}
 	}
-	if len(countryCodesFound) < 180 {
-		t.Errorf("expected worldwide country coverage, found only %d country codes", len(countryCodesFound))
+	if len(countryCodesFound) != len(expectedCountryCodes) {
+		t.Errorf("country-code coverage mismatch: found %d, expected %d", len(countryCodesFound), len(expectedCountryCodes))
 	}
 
 	for i := uint32(0); i < header.NumberOfLongForecastTables; i++ {
