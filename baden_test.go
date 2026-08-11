@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/binary"
+	"hash/crc32"
 	"os"
 	"testing"
 	"unicode/utf16"
@@ -27,6 +28,12 @@ func TestCustomLocationsInEnglishForecast(t *testing.T) {
 	var header Header
 	if err := binary.Read(bytes.NewReader(decompressed), binary.BigEndian, &header); err != nil {
 		t.Fatal(err)
+	}
+	if header.Filesize != uint32(len(decompressed)) {
+		t.Fatalf("header size %d does not match decoded size %d", header.Filesize, len(decompressed))
+	}
+	if checksum := crc32.ChecksumIEEE(decompressed[12:]); header.CRC32 != checksum {
+		t.Fatalf("header CRC32 %08x does not match decoded CRC32 %08x", header.CRC32, checksum)
 	}
 
 	list := ParseWeatherXML()
@@ -117,6 +124,27 @@ func TestCustomLocationsInEnglishForecast(t *testing.T) {
 		if found != 1 {
 			t.Errorf("expected exactly one %s location, found %d", name, found)
 		}
+	}
+	shortData, err := os.ReadFile("files/1/108/short.bin")
+	if err != nil {
+		t.Fatal(err)
+	}
+	shortDecompressed, err := lz10.Decompress(shortData[320:])
+	if err != nil {
+		t.Fatal(err)
+	}
+	var shortHeader ShortHeader
+	if err := binary.Read(bytes.NewReader(shortDecompressed), binary.BigEndian, &shortHeader); err != nil {
+		t.Fatal(err)
+	}
+	if shortHeader.Filesize != uint32(len(shortDecompressed)) {
+		t.Fatalf("short header size %d does not match decoded size %d", shortHeader.Filesize, len(shortDecompressed))
+	}
+	if checksum := crc32.ChecksumIEEE(shortDecompressed[12:]); shortHeader.CRC32 != checksum {
+		t.Fatalf("short CRC32 %08x does not match decoded CRC32 %08x", shortHeader.CRC32, checksum)
+	}
+	if shortHeader.NumberOfCurrentForecastTables != header.NumberOfLocations {
+		t.Fatalf("short feed has %d current forecasts for %d locations", shortHeader.NumberOfCurrentForecastTables, header.NumberOfLocations)
 	}
 	t.Logf("validated %d compatible locations and all requested additions", header.NumberOfLocations)
 }
