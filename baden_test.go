@@ -82,6 +82,11 @@ func TestCustomLocationsInEnglishForecast(t *testing.T) {
 		"Santa Maria di Leuca":  0,
 		"Gallipoli":             0,
 		"Minervino di Lecce":    0,
+		"Lecce":                 0,
+		"Bari":                  0,
+		"Brindisi":              0,
+		"Crotone":               0,
+		"Cosenza":               0,
 	}
 	priority := map[string]struct{}{
 		"San Giovanni in Fiore": {},
@@ -90,6 +95,11 @@ func TestCustomLocationsInEnglishForecast(t *testing.T) {
 		"Santa Maria di Leuca":  {},
 		"Gallipoli":             {},
 		"Minervino di Lecce":    {},
+		"Lecce":                 {},
+		"Bari":                  {},
+		"Brindisi":              {},
+		"Crotone":               {},
+		"Cosenza":               {},
 	}
 	countryCodesFound := make(map[uint8]struct{})
 	for i := uint32(0); i < header.NumberOfLocations; i++ {

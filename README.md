@@ -1,6 +1,6 @@
 # Baden Forecast Channel data
 
-This repository generates a retail-compatible Wii Forecast Channel globe containing Baden and Nintendo's international location set, with San Giovanni in Fiore, Maglie, Otranto, Santa Maria di Leuca, Gallipoli, and Minervino di Lecce added at high display priority. GitHub Pages publishes signed forecast files for PAL language codes 1–6.
+This repository generates a retail-compatible Wii Forecast Channel globe containing Baden and Nintendo's international location set. San Giovanni in Fiore, Maglie, Otranto, Santa Maria di Leuca, Gallipoli, Minervino di Lecce, Lecce, Bari, Brindisi, Crotone, and Cosenza are added at high display priority. GitHub Pages publishes signed forecast files for PAL language codes 1–6.
 
 Weather data comes from [Open-Meteo](https://open-meteo.com/). Baden's coordinates come from [GeoNames](https://www.geonames.org/2661646/baden.html).
 
