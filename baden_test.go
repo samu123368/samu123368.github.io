@@ -78,7 +78,6 @@ func TestCustomLocationsInEnglishForecast(t *testing.T) {
 	}
 
 	expected := map[string]int{
-		"Baden":                 0,
 		"San Giovanni in Fiore": 0,
 		"Maglie":                0,
 		"Otranto":               0,
@@ -103,6 +102,10 @@ func TestCustomLocationsInEnglishForecast(t *testing.T) {
 		"Brindisi":              {},
 		"Crotone":               {},
 		"Cosenza":               {},
+	}
+	for _, city := range compatibleHomeCities {
+		expected[city.name] = 0
+		priority[city.name] = struct{}{}
 	}
 	countryCodesFound := make(map[uint8]struct{})
 	for i := uint32(0); i < header.NumberOfLocations; i++ {
