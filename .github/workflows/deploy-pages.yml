@@ -4,7 +4,9 @@ on:
   push:
     branches: [main]
   schedule:
-    - cron: "17 */12 * * *"
+    # Generate often enough that a delayed GitHub scheduler run cannot leave
+    # the Wii serving weather that is nearly a day old.
+    - cron: "43 */4 * * *"
   workflow_dispatch:
 
 permissions:
