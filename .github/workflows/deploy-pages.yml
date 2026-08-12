@@ -4,9 +4,8 @@ on:
   push:
     branches: [main]
   schedule:
-    # Generate often enough that a delayed GitHub scheduler run cannot leave
-    # the Wii serving weather that is nearly a day old.
-    - cron: "43 */4 * * *"
+    # Refresh the Forecast Channel data once each hour.
+    - cron: "43 * * * *"
   workflow_dispatch:
 
 permissions:

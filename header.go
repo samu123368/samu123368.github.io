@@ -1,9 +1,9 @@
 package main
 
-// GitHub Pages regenerates the feed every four hours. A six-hour validity
-// window gives delayed scheduled runs some overlap without letting the Wii
-// keep weather data for half a day.
-const forecastValidityMinutes uint32 = 6 * 60
+// GitHub Pages regenerates the feed every hour. Expiring each file after one
+// hour makes the channel request the next hourly forecast instead of retaining
+// an older download.
+const forecastValidityMinutes uint32 = 60
 
 type Header struct {
 	Version                        uint32
