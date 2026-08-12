@@ -45,7 +45,7 @@ func (f *Forecast) MakeShortBin(cities []InternationalCity) []byte {
 		Filesize:                      0,
 		CRC32:                         0,
 		OpenTimestamp:                 fixTime(int(currentTime)),
-		CloseTimestamp:                fixTime(int(currentTime)) + 780,
+		CloseTimestamp:                fixTime(int(currentTime)) + forecastValidityMinutes,
 		CountryCode:                   f.currentCountryCode,
 		LanguageCode:                  f.currentLanguageCode,
 		TemperatureFlag:               0,

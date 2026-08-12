@@ -1,5 +1,10 @@
 package main
 
+// GitHub Pages regenerates the feed every four hours. A six-hour validity
+// window gives delayed scheduled runs some overlap without letting the Wii
+// keep weather data for half a day.
+const forecastValidityMinutes uint32 = 6 * 60
+
 type Header struct {
 	Version                        uint32
 	Filesize                       uint32
@@ -35,7 +40,7 @@ func (f *Forecast) MakeHeader() {
 		Filesize:                       0,
 		CRC32:                          0,
 		OpenTimestamp:                  fixTime(int(currentTime)),
-		CloseTimestamp:                 fixTime(int(currentTime)) + 780,
+		CloseTimestamp:                 fixTime(int(currentTime)) + forecastValidityMinutes,
 		CountryCode:                    f.currentCountryCode,
 		LanguageCode:                   f.currentLanguageCode,
 		TemperatureFlag:                f.GetTemperatureFlag(),

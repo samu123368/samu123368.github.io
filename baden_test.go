@@ -35,6 +35,9 @@ func TestCustomLocationsInEnglishForecast(t *testing.T) {
 	if checksum := crc32.ChecksumIEEE(decompressed[12:]); header.CRC32 != checksum {
 		t.Fatalf("header CRC32 %08x does not match decoded CRC32 %08x", header.CRC32, checksum)
 	}
+	if validity := header.CloseTimestamp - header.OpenTimestamp; validity != forecastValidityMinutes {
+		t.Fatalf("forecast validity is %d minutes, expected %d", validity, forecastValidityMinutes)
+	}
 
 	list := ParseWeatherXML()
 	list.International.Cities = BuildCompatibleCities(list, "Switzerland")
@@ -152,6 +155,9 @@ func TestCustomLocationsInEnglishForecast(t *testing.T) {
 	}
 	if checksum := crc32.ChecksumIEEE(shortDecompressed[12:]); shortHeader.CRC32 != checksum {
 		t.Fatalf("short CRC32 %08x does not match decoded CRC32 %08x", shortHeader.CRC32, checksum)
+	}
+	if validity := shortHeader.CloseTimestamp - shortHeader.OpenTimestamp; validity != forecastValidityMinutes {
+		t.Fatalf("short forecast validity is %d minutes, expected %d", validity, forecastValidityMinutes)
 	}
 	if shortHeader.NumberOfCurrentForecastTables != header.NumberOfLocations {
 		t.Fatalf("short feed has %d current forecasts for %d locations", shortHeader.NumberOfCurrentForecastTables, header.NumberOfLocations)
