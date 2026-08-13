@@ -1,6 +1,6 @@
 # Baden Forecast Channel data
 
-This repository generates a retail-compatible Wii Forecast Channel globe containing Nintendo's international location set plus a compact Swiss set: Untersiggenthal, Baden, Brugg, Birmenstorf, Gebenstorf, Dättwil, Turgi, Wettingen, Spreitenbach, Dietikon, Schlieren, and Zürich. San Giovanni in Fiore, Maglie, Otranto, Santa Maria di Leuca, Gallipoli, Minervino di Lecce, Lecce, Bari, Brindisi, Crotone, and Cosenza remain included. Every custom Swiss and Italian location has maximum map display priority. GitHub Pages publishes signed forecast files for PAL language codes 1–6.
+This repository generates a retail-compatible Wii Forecast Channel globe containing Nintendo's international location set plus a compact Swiss set. The Baden/Limmattal group contains Untersiggenthal, Baden, Brugg, Birmenstorf, Gebenstorf, Dättwil, Turgi, Wettingen, Spreitenbach, Dietikon, Schlieren, and Zürich. The Reusstal backbone contains Andermatt, Göschenen, Erstfeld, Altdorf, Lucerne, Emmen, Gisikon, Rotkreuz, Muri, Bremgarten, Mellingen, and Windisch. San Giovanni in Fiore, Maglie, Otranto, Santa Maria di Leuca, Gallipoli, Minervino di Lecce, Lecce, Bari, Brindisi, Crotone, and Cosenza remain included. Every custom Swiss and Italian location has maximum map display priority. GitHub Pages publishes signed forecast files for PAL language codes 1–6.
 
 Weather data and coordinates come from [Open-Meteo](https://open-meteo.com/).
 

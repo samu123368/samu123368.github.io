@@ -77,18 +77,22 @@ func TestCustomLocationsInEnglishForecast(t *testing.T) {
 		t.Fatalf("not every location has a forecast table: %d long + %d short != %d locations", header.NumberOfLongForecastTables, header.NumberOfShortForecastTables, header.NumberOfLocations)
 	}
 
-	expected := map[string]int{
-		"San Giovanni in Fiore": 0,
-		"Maglie":                0,
-		"Otranto":               0,
-		"Santa Maria di Leuca":  0,
-		"Gallipoli":             0,
-		"Minervino di Lecce":    0,
-		"Lecce":                 0,
-		"Bari":                  0,
-		"Brindisi":              0,
-		"Crotone":               0,
-		"Cosenza":               0,
+	type expectedLocation struct {
+		countryCode uint8
+		found       int
+	}
+	expected := map[string]expectedLocation{
+		"San Giovanni in Fiore": {countryCode: countryCodes["Italy"]},
+		"Maglie":                {countryCode: countryCodes["Italy"]},
+		"Otranto":               {countryCode: countryCodes["Italy"]},
+		"Santa Maria di Leuca":  {countryCode: countryCodes["Italy"]},
+		"Gallipoli":             {countryCode: countryCodes["Italy"]},
+		"Minervino di Lecce":    {countryCode: countryCodes["Italy"]},
+		"Lecce":                 {countryCode: countryCodes["Italy"]},
+		"Bari":                  {countryCode: countryCodes["Italy"]},
+		"Brindisi":              {countryCode: countryCodes["Italy"]},
+		"Crotone":               {countryCode: countryCodes["Italy"]},
+		"Cosenza":               {countryCode: countryCodes["Italy"]},
 	}
 	priority := map[string]struct{}{
 		"San Giovanni in Fiore": {},
@@ -104,7 +108,7 @@ func TestCustomLocationsInEnglishForecast(t *testing.T) {
 		"Cosenza":               {},
 	}
 	for _, city := range compatibleHomeCities {
-		expected[city.name] = 0
+		expected[city.name] = expectedLocation{countryCode: countryCodes["Switzerland"]}
 		priority[city.name] = struct{}{}
 	}
 	countryCodesFound := make(map[uint8]struct{})
@@ -113,11 +117,14 @@ func TestCustomLocationsInEnglishForecast(t *testing.T) {
 		countryCodesFound[decompressed[offset]] = struct{}{}
 		cityTextOffset := binary.BigEndian.Uint32(decompressed[offset+4:])
 		name := decodeUTF16BE(decompressed, cityTextOffset)
-		if _, ok := expected[name]; ok {
-			expected[name]++
+		if location, ok := expected[name]; ok && decompressed[offset] == location.countryCode {
+			location.found++
+			expected[name] = location
 		}
-		if _, ok := priority[name]; ok && decompressed[offset+20] != 9 {
-			t.Errorf("expected %s to have maximum map priority, found %d", name, decompressed[offset+20])
+		if location, ok := expected[name]; ok && decompressed[offset] == location.countryCode {
+			if _, priorityLocation := priority[name]; priorityLocation && decompressed[offset+20] != 9 {
+				t.Errorf("expected %s to have maximum map priority, found %d", name, decompressed[offset+20])
+			}
 		}
 	}
 	if len(countryCodesFound) != len(expectedCountryCodes) {
@@ -136,9 +143,9 @@ func TestCustomLocationsInEnglishForecast(t *testing.T) {
 			t.Errorf("short forecast %d has no weather icon", i)
 		}
 	}
-	for name, found := range expected {
-		if found != 1 {
-			t.Errorf("expected exactly one %s location, found %d", name, found)
+	for name, location := range expected {
+		if location.found != 1 {
+			t.Errorf("expected exactly one %s location for country code %d, found %d", name, location.countryCode, location.found)
 		}
 	}
 	shortData, err := os.ReadFile("files/1/108/short.bin")
