@@ -7,9 +7,10 @@ type compatibleHomeCity struct {
 	latitude  float64
 }
 
-// Keep the requested Swiss map set deliberately compact. Baden and Zürich
-// already exist in Nintendo's source list; the remaining places are inserted.
+// Keep the requested Swiss map set deliberately compact. Existing Nintendo
+// locations are promoted to maximum priority; missing places are inserted.
 var compatibleHomeCities = []compatibleHomeCity{
+	// Baden, lower Aargau and the Limmattal.
 	{name: "Untersiggenthal", province: "Aargau", longitude: 8.25554, latitude: 47.50213},
 	{name: "Turgi", province: "Aargau", longitude: 8.25412, latitude: 47.49201},
 	{name: "Gebenstorf", province: "Aargau", longitude: 8.23949, latitude: 47.48136},
@@ -22,6 +23,20 @@ var compatibleHomeCities = []compatibleHomeCity{
 	{name: "Brugg", province: "Aargau", longitude: 8.20869, latitude: 47.48096},
 	{name: "Birmenstorf", province: "Aargau", longitude: 8.250005, latitude: 47.463884},
 	{name: "Dättwil", province: "Aargau", longitude: 8.28474, latitude: 47.45506},
+
+	// Important Reusstal centres and transport hubs, from south to north.
+	{name: "Andermatt", province: "Uri", longitude: 8.59388, latitude: 46.63565},
+	{name: "Göschenen", province: "Uri", longitude: 8.58709, latitude: 46.66816},
+	{name: "Erstfeld", province: "Uri", longitude: 8.65052, latitude: 46.81885},
+	{name: "Altdorf", province: "Uri", longitude: 8.64441, latitude: 46.88042},
+	{name: "Lucerne", province: "Luzern", longitude: 8.30635, latitude: 47.05048},
+	{name: "Emmen", province: "Luzern", longitude: 8.27331, latitude: 47.07819},
+	{name: "Gisikon", province: "Luzern", longitude: 8.40356, latitude: 47.12701},
+	{name: "Rotkreuz", province: "Zug", longitude: 8.43140, latitude: 47.14283},
+	{name: "Muri", province: "Aargau", longitude: 8.33854, latitude: 47.27428},
+	{name: "Bremgarten", province: "Aargau", longitude: 8.34214, latitude: 47.35109},
+	{name: "Mellingen", province: "Aargau", longitude: 8.27331, latitude: 47.41903},
+	{name: "Windisch", province: "Aargau", longitude: 8.21842, latitude: 47.47899},
 }
 
 func addCompatibleHomeCities(list *WeatherList, homeCountry string) {
