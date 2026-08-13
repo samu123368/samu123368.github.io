@@ -12,7 +12,6 @@ type compatibleHomeCity struct {
 var compatibleHomeCities = []compatibleHomeCity{
 	// Baden, lower Aargau and the Limmattal.
 	{name: "Untersiggenthal", province: "Aargau", longitude: 8.25554, latitude: 47.50213},
-	{name: "Turgi", province: "Aargau", longitude: 8.25412, latitude: 47.49201},
 	{name: "Gebenstorf", province: "Aargau", longitude: 8.23949, latitude: 47.48136},
 	{name: "Baden", province: "Aargau", longitude: 8.30592, latitude: 47.47333},
 	{name: "Wettingen", province: "Aargau", longitude: 8.32663, latitude: 47.46606},
@@ -22,7 +21,6 @@ var compatibleHomeCities = []compatibleHomeCity{
 	{name: "Zürich", province: "Zürich", longitude: 8.55, latitude: 47.36667},
 	{name: "Brugg", province: "Aargau", longitude: 8.20869, latitude: 47.48096},
 	{name: "Birmenstorf", province: "Aargau", longitude: 8.250005, latitude: 47.463884},
-	{name: "Dättwil", province: "Aargau", longitude: 8.28474, latitude: 47.45506},
 
 	// Important Reusstal centres and transport hubs, from south to north.
 	{name: "Andermatt", province: "Uri", longitude: 8.59388, latitude: 46.63565},
@@ -36,7 +34,6 @@ var compatibleHomeCities = []compatibleHomeCity{
 	{name: "Muri", province: "Aargau", longitude: 8.33854, latitude: 47.27428},
 	{name: "Bremgarten", province: "Aargau", longitude: 8.34214, latitude: 47.35109},
 	{name: "Mellingen", province: "Aargau", longitude: 8.27331, latitude: 47.41903},
-	{name: "Windisch", province: "Aargau", longitude: 8.21842, latitude: 47.47899},
 }
 
 func addCompatibleHomeCities(list *WeatherList, homeCountry string) {

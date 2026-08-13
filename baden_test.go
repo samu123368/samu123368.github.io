@@ -111,12 +111,20 @@ func TestCustomLocationsInEnglishForecast(t *testing.T) {
 		expected[city.name] = expectedLocation{countryCode: countryCodes["Switzerland"]}
 		priority[city.name] = struct{}{}
 	}
+	excludedSwissLocations := map[string]struct{}{
+		"Dättwil":  {},
+		"Turgi":    {},
+		"Windisch": {},
+	}
 	countryCodesFound := make(map[uint8]struct{})
 	for i := uint32(0); i < header.NumberOfLocations; i++ {
 		offset := header.LocationsTableOffset + i*24
 		countryCodesFound[decompressed[offset]] = struct{}{}
 		cityTextOffset := binary.BigEndian.Uint32(decompressed[offset+4:])
 		name := decodeUTF16BE(decompressed, cityTextOffset)
+		if _, excluded := excludedSwissLocations[name]; excluded && decompressed[offset] == countryCodes["Switzerland"] {
+			t.Errorf("expected removed Swiss location %s to be absent", name)
+		}
 		if location, ok := expected[name]; ok && decompressed[offset] == location.countryCode {
 			location.found++
 			expected[name] = location
