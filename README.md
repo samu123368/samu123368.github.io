@@ -4,7 +4,7 @@ This repository generates a retail-compatible Wii Forecast Channel globe contain
 
 Weather data and coordinates come from [Open-Meteo](https://open-meteo.com/).
 
-The generator is based on WiiLink's MPL-2.0-licensed [ForecastChannel](https://github.com/WiiLink24/ForecastChannel) project. It uses Open-Meteo instead of an AccuWeather key. GitHub Actions refreshes and deploys the data every hour, and each generated file expires after one hour so the channel requests the next hourly forecast. An earlier 4,038-location experiment was removed because the retail channel downloaded the data but rejected it at runtime.
+The generator is based on WiiLink's MPL-2.0-licensed [ForecastChannel](https://github.com/WiiLink24/ForecastChannel) project. It uses Open-Meteo instead of an AccuWeather key. GitHub Actions requests a refresh at minute `:00` of every hour. Each generated file remains valid for 24 hours so a delayed or dropped scheduled run does not cause `FORE000006`; successful runs still replace it with fresh hourly weather. An earlier 4,038-location experiment was removed because the retail channel downloaded the data but rejected it at runtime.
 
 The matching WAD fixes the feed country code to `108`, so the complete custom location set and its weather icons load regardless of the country selected in Wii settings. It downloads the compact aliases below over plain HTTP, which the Wii's legacy networking supports:
 

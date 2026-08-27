@@ -1,9 +1,9 @@
 package main
 
-// GitHub Pages regenerates the feed every hour. Expiring each file after one
-// hour makes the channel request the next hourly forecast instead of retaining
-// an older download.
-const forecastValidityMinutes uint32 = 60
+// GitHub Pages requests a fresh feed every hour. Scheduled GitHub Actions runs
+// can be delayed or dropped, so keep the last signed forecast acceptable long
+// enough to prevent FORE000006 during a scheduler gap.
+const forecastValidityMinutes uint32 = 24 * 60
 
 type Header struct {
 	Version                        uint32
