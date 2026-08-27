@@ -34,6 +34,20 @@ var compatibleHomeCities = []compatibleHomeCity{
 	{name: "Muri", province: "Aargau", longitude: 8.33854, latitude: 47.27428},
 	{name: "Bremgarten", province: "Aargau", longitude: 8.34214, latitude: 47.35109},
 	{name: "Mellingen", province: "Aargau", longitude: 8.27331, latitude: 47.41903},
+
+	// S11 stops, grouped by their actual canton rather than the rail line.
+	{name: "Lenzburg", province: "Aargau", longitude: 8.17503, latitude: 47.38853},
+	{name: "Othmarsingen", province: "Aargau", longitude: 8.21383, latitude: 47.40125},
+	{name: "Mägenwil", province: "Aargau", longitude: 8.23297, latitude: 47.41252},
+	{name: "Stettbach", province: "Zürich", longitude: 8.59294, latitude: 47.39437},
+	{name: "Winterthur", province: "Zürich", longitude: 8.72413, latitude: 47.50564},
+	{name: "Seuzach", province: "Zürich", longitude: 8.73209, latitude: 47.53560},
+	{name: "Sennhof-Kyburg", province: "Zürich", longitude: 8.75775, latitude: 47.46797},
+	{name: "Kollbrunn", province: "Zürich", longitude: 8.78295, latitude: 47.45793},
+	{name: "Rikon", province: "Zürich", longitude: 8.79796, latitude: 47.44585},
+	{name: "Rämismühle-Zell", province: "Zürich", longitude: 8.82166, latitude: 47.43932},
+	{name: "Turbenthal", province: "Zürich", longitude: 8.84629, latitude: 47.43633},
+	{name: "Wila", province: "Zürich", longitude: 8.84524, latitude: 47.41928},
 }
 
 func addCompatibleHomeCities(list *WeatherList, homeCountry string) {
