@@ -4,8 +4,10 @@ on:
   push:
     branches: [main]
   schedule:
-    # Request a fresh Forecast Channel deployment at the start of every hour.
-    - cron: "0 * * * *"
+    # Check frequently because GitHub may delay or drop individual cron events.
+    # The freshness gate below limits actual forecast deployments to roughly
+    # once per hour while preserving :00 as one of the requested start times.
+    - cron: "*/5 * * * *"
   workflow_dispatch:
 
 permissions:
@@ -15,10 +17,56 @@ permissions:
 
 concurrency:
   group: github-pages
-  cancel-in-progress: true
+  # Let an active refresh finish. A queued check will then see the new file and
+  # skip instead of cancelling a valid deployment near the end of its run.
+  cancel-in-progress: false
 
 jobs:
+  freshness:
+    runs-on: ubuntu-latest
+    outputs:
+      refresh: ${{ steps.check.outputs.refresh }}
+    steps:
+      - name: Check live forecast age
+        id: check
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          LIVE_FORECAST_URL: https://b7.185.199.108.153.nip.io/1/108/f.bin
+        shell: bash
+        run: |
+          # Pushes and manual runs always publish. Scheduled checks publish only
+          # when the current feed is at least 50 minutes old, leaving enough
+          # time for generation before its 60-minute validity window closes.
+          if [[ "$EVENT_NAME" != "schedule" ]]; then
+            echo "refresh=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          headers="$(curl --fail --silent --show-error --head --max-time 15 \
+            "${LIVE_FORECAST_URL}?freshness=${GITHUB_RUN_ID}" || true)"
+          last_modified="$(printf '%s\n' "$headers" | tr -d '\r' | \
+            awk -F': ' 'tolower($1) == "last-modified" { print $2; exit }')"
+
+          if [[ -z "$last_modified" ]]; then
+            echo "Could not read the live timestamp; refreshing defensively."
+            echo "refresh=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          modified_epoch="$(date --date="$last_modified" +%s)"
+          now_epoch="$(date -u +%s)"
+          age_seconds="$((now_epoch - modified_epoch))"
+          echo "Live forecast age: ${age_seconds} seconds"
+
+          if (( age_seconds >= 3000 )); then
+            echo "refresh=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "refresh=false" >> "$GITHUB_OUTPUT"
+          fi
+
   deploy:
+    needs: freshness
+    if: needs.freshness.outputs.refresh == 'true'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
