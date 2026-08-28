@@ -1,9 +1,8 @@
 package main
 
-// GitHub Pages requests a fresh feed every hour. Scheduled GitHub Actions runs
-// can be delayed or dropped, so keep the last signed forecast acceptable long
-// enough to prevent FORE000006 during a scheduler gap.
-const forecastValidityMinutes uint32 = 24 * 60
+// Keep the signed feed valid for one hour so the channel requests fresh
+// weather on the hourly refresh cycle.
+const forecastValidityMinutes uint32 = 60
 
 type Header struct {
 	Version                        uint32
