@@ -12,7 +12,6 @@ type compatibleHomeCity struct {
 var compatibleHomeCities = []compatibleHomeCity{
 	// Baden, lower Aargau and the Limmattal.
 	{name: "Untersiggenthal", province: "Aargau", longitude: 8.25554, latitude: 47.50213},
-	{name: "Gebenstorf", province: "Aargau", longitude: 8.23949, latitude: 47.48136},
 	{name: "Baden", province: "Aargau", longitude: 8.30592, latitude: 47.47333},
 	{name: "Wettingen", province: "Aargau", longitude: 8.32663, latitude: 47.46606},
 	{name: "Spreitenbach", province: "Aargau", longitude: 8.36792, latitude: 47.42285},
