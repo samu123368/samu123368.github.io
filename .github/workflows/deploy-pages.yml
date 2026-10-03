@@ -5,10 +5,16 @@ on:
     branches: [main]
   schedule:
     # Check frequently because GitHub may delay or drop individual cron events.
-    # The freshness gate below limits actual forecast deployments to roughly
-    # once per hour while preserving :00 as one of the requested start times.
+    # Backup checks also prepare at :50/:55 if the Cloudflare trigger is late.
+    # A ready artifact is held until its planned :00 release boundary.
     - cron: "*/5 * * * *"
   workflow_dispatch:
+    inputs:
+      publish_at:
+        description: "Optional planned publication time (Unix seconds, UTC hour boundary)"
+        required: false
+        type: string
+        default: ""
 
 permissions:
   contents: read
@@ -34,10 +40,15 @@ jobs:
           LIVE_FORECAST_URL: https://b7.185.199.108.153.nip.io/1/108/f.bin
         shell: bash
         run: |
-          # Pushes and manual runs always publish. Scheduled checks publish only
-          # when the current feed is at least 50 minutes old, leaving enough
-          # time for generation before its 60-minute validity window closes.
+          # Pushes/manual runs generate a complete artifact. Backup checks
+          # prepare in the last ten minutes of the hour, or repair old files.
           if [[ "$EVENT_NAME" != "schedule" ]]; then
+            echo "refresh=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          minute="$(date -u +%M)"
+          if (( 10#$minute >= 50 )); then
             echo "refresh=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
@@ -68,6 +79,7 @@ jobs:
     needs: freshness
     if: needs.freshness.outputs.refresh == 'true'
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -76,11 +88,18 @@ jobs:
       - uses: actions/setup-go@v6
         with:
           go-version: "1.26.x"
+      - name: Plan publication hour
+        id: plan
+        env:
+          REQUESTED_PUBLISH_AT: ${{ inputs.publish_at }}
+        run: python3 scripts/publication.py plan
       - name: Install forecast signing key
         env:
           FORECAST_PRIVATE_KEY: ${{ secrets.FORECAST_PRIVATE_KEY }}
         run: printf '%s' "$FORECAST_PRIVATE_KEY" > Private.pem
       - name: Generate Switzerland forecast data
+        env:
+          FORECAST_VALID_FROM: ${{ steps.plan.outputs.publish_at }}
         run: |
           cp config-example.xml config.xml
           go build -buildvcs=false -o ForecastGenerator .
@@ -88,11 +107,17 @@ jobs:
           find files -type f -name forecast.bin -execdir cp forecast.bin f.bin \;
           find files -type f -name short.bin -execdir cp short.bin s.bin \;
       - name: Validate generated data
-        run: go test ./...
+        run: |
+          go test ./...
+          python3 -m unittest discover -s scripts -p 'test_*.py'
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4
         with:
           path: files
+      - name: Hold prepared artifact until the hour
+        env:
+          PUBLISH_AT: ${{ steps.plan.outputs.publish_at }}
+        run: python3 -u scripts/publication.py wait
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

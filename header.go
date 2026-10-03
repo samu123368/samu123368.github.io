@@ -1,7 +1,7 @@
 package main
 
-// Keep the signed feed valid for one hour so the channel requests fresh
-// weather on the hourly refresh cycle.
+// The signed validity interval covers one publication cycle. Actual collection
+// times in location tables are not changed by early preparation.
 const forecastValidityMinutes uint32 = 60
 
 type Header struct {
@@ -38,8 +38,8 @@ func (f *Forecast) MakeHeader() {
 		Version:                        0,
 		Filesize:                       0,
 		CRC32:                          0,
-		OpenTimestamp:                  fixTime(int(currentTime)),
-		CloseTimestamp:                 fixTime(int(currentTime)) + forecastValidityMinutes,
+		OpenTimestamp:                  fixTime(int(forecastValidFrom)),
+		CloseTimestamp:                 fixTime(int(forecastValidFrom)) + forecastValidityMinutes,
 		CountryCode:                    f.currentCountryCode,
 		LanguageCode:                   f.currentLanguageCode,
 		TemperatureFlag:                f.GetTemperatureFlag(),

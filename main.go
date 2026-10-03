@@ -46,15 +46,19 @@ type Forecast struct {
 }
 
 var (
-	currentTime = time.Now().Unix()
-	weatherMap  = map[string]*accuweather.Weather{}
-	weatherList *WeatherList
-	mapMutex    = sync.RWMutex{}
-	_config     Config
-	s3Client    *s3.Client
+	currentTime       = time.Now().Unix()
+	forecastValidFrom = currentTime
+	weatherMap        = map[string]*accuweather.Weather{}
+	weatherList       *WeatherList
+	mapMutex          = sync.RWMutex{}
+	_config           Config
+	s3Client          *s3.Client
 )
 
 func main() {
+	validFrom, err := parseForecastValidFrom(os.Getenv("FORECAST_VALID_FROM"), currentTime)
+	checkError(err)
+	forecastValidFrom = validFrom
 	// Get all important data we need
 	weatherList = ParseWeatherXML()
 	weatherList.International.Cities = BuildCompatibleCities(weatherList, "Switzerland")
