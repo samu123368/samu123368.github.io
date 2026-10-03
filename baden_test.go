@@ -113,9 +113,26 @@ func TestCustomLocationsInEnglishForecast(t *testing.T) {
 		priority[city.name] = struct{}{}
 	}
 	excludedSwissLocations := map[string]struct{}{
-		"Dättwil":  {},
-		"Turgi":    {},
-		"Windisch": {},
+		"Birmenstorf":     {},
+		"Dättwil":         {},
+		"Emmen":           {},
+		"Gebenstorf":      {},
+		"Gisikon":         {},
+		"Göschenen":       {},
+		"Kollbrunn":       {},
+		"Mägenwil":        {},
+		"Mellingen":       {},
+		"Othmarsingen":    {},
+		"Rämismühle-Zell": {},
+		"Rikon":           {},
+		"Sennhof-Kyburg":  {},
+		"Seuzach":         {},
+		"Stettbach":       {},
+		"Turgi":           {},
+		"Turbenthal":      {},
+		"Wettingen":       {},
+		"Wila":            {},
+		"Windisch":        {},
 	}
 	countryCodesFound := make(map[uint8]struct{})
 	for i := uint32(0); i < header.NumberOfLocations; i++ {
